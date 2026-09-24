@@ -9,6 +9,12 @@ dist-ssr/
 build/
 *.local
 
+# Next.js build output
+.next/
+**/.next/
+next-env.d.ts
+*.tsbuildinfo
+
 # Environment variables
 .env
 .env.local
@@ -59,3 +65,25 @@ ENV/
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Generated synthetic datasets (regenerables de forma determinista con seed=42)
+data/raw/
+data/processed/
+
+# ML artifacts y tracking (regenerables con python src/models/train.py)
+models/
+mlruns/
+mlartifacts/
+*.mlflow
+mlflow.db
+
+# Feedback clínico (datos sensibles de decisiones del facultativo)
+data/feedback/
+
+# Logs temporales de arranque (Streamlit, etc.)
+*.log
+
+# Credenciales AWS (nunca versionar)
+.aws/
+*.pem
+credentials
