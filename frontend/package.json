@@ -12,6 +12,7 @@
   "dependencies": {
     "@rolldown/binding-wasm32-wasi": "^1.2.9",
     "@tailwindcss/vite": "^4.3.3",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.46.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

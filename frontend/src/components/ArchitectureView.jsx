@@ -1,5 +1,4 @@
-import React from 'react';
-import { Layers, GitBranch, Lightbulb, Shield, Database, Cpu, Bell, RefreshCw, CheckCircle2, UserCheck, Star } from 'lucide-react';
+import { Layers, GitBranch, Database, Cpu, UserCheck, Star } from 'lucide-react';
 
 export default function ArchitectureView() {
   return (

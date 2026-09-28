@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { X, Copy, Check, Send, Download, FileText, CheckCircle2 } from 'lucide-react';
+import { generateReferralPDF } from '../utils/pdfGenerator';
 
 export default function ReferralModal({ patient, onClose, onConfirmReferral }) {
   const [copied, setCopied] = useState(false);
   const [priority, setPriority] = useState('Preferente');
   const [urgencyNotes, setUrgencyNotes] = useState('');
   const [sentSuccess, setSentSuccess] = useState(false);
+  const [pdfDownloaded, setPdfDownloaded] = useState(false);
 
   if (!patient) return null;
 
@@ -44,6 +46,12 @@ Documento generado como soporte a la toma de decisión clínica.`;
     navigator.clipboard.writeText(referralReport);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleDownloadPDF = () => {
+    generateReferralPDF(patient, { priority, urgencyNotes });
+    setPdfDownloaded(true);
+    setTimeout(() => setPdfDownloaded(false), 3000);
   };
 
   const handleConfirm = () => {
@@ -126,24 +134,34 @@ Documento generado como soporte a la toma de decisión clínica.`;
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="font-semibold text-slate-300">
-                    Vista previa del informe (listo para copiar a HCE o enviar por FHIR ServiceRequest):
+                    Vista previa del informe (listo para copiar a HCE o descargar en PDF oficial):
                   </span>
-                  <button
-                    onClick={handleCopy}
-                    className="text-teal-400 hover:text-teal-300 flex items-center space-x-1 font-semibold"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400">¡Copiado!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        <span>Copiar texto</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleDownloadPDF}
+                      className="text-xs text-amber-400 hover:text-amber-300 flex items-center space-x-1 font-semibold transition"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{pdfDownloaded ? '¡PDF Descargado!' : 'Descargar PDF'}</span>
+                    </button>
+                    <span className="text-slate-600">|</span>
+                    <button
+                      onClick={handleCopy}
+                      className="text-teal-400 hover:text-teal-300 flex items-center space-x-1 font-semibold"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <span className="text-emerald-400">¡Copiado!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>Copiar texto</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <pre className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-slate-300 font-mono text-[11px] leading-relaxed whitespace-pre-wrap overflow-x-auto max-h-72">
                   {referralReport}
@@ -155,21 +173,30 @@ Documento generado como soporte a la toma de decisión clínica.`;
 
         {/* Footer */}
         {!sentSuccess && (
-          <div className="p-4 border-t border-slate-800 bg-slate-850 flex items-center justify-end space-x-2">
+          <div className="p-4 border-t border-slate-800 bg-slate-850 flex flex-wrap items-center justify-between gap-2">
             <button
-              onClick={handleCopy}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-1.5 transition"
+              onClick={handleDownloadPDF}
+              className="px-4 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center space-x-1.5 transition"
             >
-              <Copy className="w-3.5 h-3.5" />
-              <span>{copied ? 'Copiado al Portapapeles' : 'Copiar para HCE'}</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>{pdfDownloaded ? '¡PDF Generado con Éxito!' : 'Descargar PDF Oficial con Membrete'}</span>
             </button>
-            <button
-              onClick={handleConfirm}
-              className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-teal-500/20 transition"
-            >
-              <Send className="w-3.5 h-3.5 text-slate-950" />
-              <span>Emitir Derivación a Dermatología</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleCopy}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-1.5 transition"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>{copied ? 'Copiado al Portapapeles' : 'Copiar para HCE'}</span>
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-teal-500/20 transition"
+              >
+                <Send className="w-3.5 h-3.5 text-slate-950" />
+                <span>Emitir Derivación a Dermatología</span>
+              </button>
+            </div>
           </div>
         )}
       </div>

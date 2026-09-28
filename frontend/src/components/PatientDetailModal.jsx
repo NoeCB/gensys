@@ -6,14 +6,12 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Share2,
   Sparkles,
   Flame,
   Pill,
   Moon,
   Activity,
   Send,
-  HelpCircle,
   Check
 } from 'lucide-react';
 

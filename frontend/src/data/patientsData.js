@@ -287,6 +287,64 @@ Exploración: piel seca, sin signos de liquenificación ni eccema exudativo. Tra
       comorbidityScore: 10,
       sleepScore: 10
     }
+  },
+  {
+    id: "PAC-2026-245",
+    nhc: "8391022",
+    name: "Hugo Morales F.",
+    age: "9 meses",
+    ageMonths: 9,
+    cohort: "Lactantes (6m - 2 años)",
+    gender: "Masculino",
+    weight: "7.8 kg (Percentil 15)",
+    pediatrician: "Dra. Isabel Benítez - C.S. Goya",
+    riskScore: 88,
+    riskLevel: "Muy Alto",
+    status: "Pendiente",
+    lastVisitDate: "15/09/2026",
+    flareCount12m: 5,
+    steroidEscalation: "Hidrocortisona y metilprednisolona tópica intermitente con corticofobia parental",
+    sleepImpact: "Severo (>6 despertares nocturnos por prurito)",
+    atopicMarch: ["Eccema atópico facial y periocular", "Alergia alimentaria múltiple (huevo y leche)"],
+    currentTreatment: "Aceponato de metilprednisolona tópica en pauta descendente + emolientes",
+    keyTriggers: [
+      "Lactante de 9 meses con dermatitis atópica severa de inicio temprano (<3 meses)",
+      "Afectación de zonas críticas: párpados, región periocular y mejillas con riesgo de blefaroconjuntivitis",
+      "Marcha atópica temprana con alergia al huevo y APLV confirmada por prick test",
+      "Impacto en percentiles de crecimiento (fallo de medro por disrupción del descanso)"
+    ],
+    dupixentEligibility: {
+      meetsAge: true, // Aprobado desde >= 6 meses
+      meetsSeverity: true,
+      failedTopicals: true,
+      score: "Candidato idóneo: Lactante <1 año con DA severa y fracaso tópico"
+    },
+    evolutionNote: `Lactante de 9 meses traído a consulta por empeoramiento tórpido de eccema eritemato-exudativo facial y periocular con edema palpebral secundario a rascado continuado. La madre refiere llanto desconsolado nocturno con más de 6 despertares por noche y frotamiento constante de la cara contra la cuna. 
+    
+Diagnosticado de alergia a proteínas de leche de vaca y clara de huevo en servicio de alergología. 
+    
+Ha recibido pautas repetidas de hidrocortisona 1% y metilprednisolona aceponato al 0.1% con mejorías fugaces de 3-4 días y recaída inmediata más severa tras la suspensión. Los padres expresan severa angustia y corticofobia ante el uso continuado de corticoides en la cara. Descenso en curva ponderal de percentil 50 a percentil 15. Sospecha de DA severa del lactante tributaria de evaluación especializada inmediata para terapia avanzada.`,
+    nlpEntities: [
+      { text: "eccema eritemato-exudativo facial y periocular con edema palpebral", category: "lesion", type: "Lesión facial en área crítica periocular" },
+      { text: "llanto desconsolado nocturno con más de 6 despertares", category: "sleep", type: "Disrupción extrema del descanso" },
+      { text: "alergia a proteínas de leche de vaca y clara de huevo", category: "comorbidity", type: "Alergia alimentaria múltiple" },
+      { text: "recaída inmediata tras suspensión (efecto rebote)", category: "rebound", type: "Efecto rebote / Dependencia corticoidea" },
+      { text: "corticofobia ante el uso continuado en la cara", category: "escalation", type: "Corticofobia parental documentada" },
+      { text: "Descenso en curva ponderal de percentil 50 a 15", category: "qol", type: "Fallo de medro / Afectación del desarrollo" }
+    ],
+    timeline: [
+      { date: "Dic 2025", age: "3 meses", event: "Aparición de eccema facial en mejillas. Pautada crema emoliente." },
+      { date: "Mar 2026", age: "6 meses", event: "Reacción anafiláctica leve con huevo. Brote generalizado. Corticoterapia tópica." },
+      { date: "Jun 2026", age: "7 meses", event: "Afectación periocular bilateral. Empeoramiento del descanso." },
+      { date: "Sep 2026", age: "9 meses", event: "Alerta RADIANT: 88% Muy Alto Riesgo. Candidato biológico pediátrico." }
+    ],
+    scores: {
+      cdlqi: 18,
+      flareScore: 89,
+      steroidScore: 85,
+      comorbidityScore: 94,
+      sleepScore: 92
+    }
   }
 ];
 

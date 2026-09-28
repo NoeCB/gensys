@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Play, RotateCcw, AlertTriangle, CheckCircle, Info, Flame, Pill, Moon, Activity } from 'lucide-react';
+import { Sparkles, Play, RotateCcw, Info } from 'lucide-react';
 
 const PRESET_CASES = [
   {

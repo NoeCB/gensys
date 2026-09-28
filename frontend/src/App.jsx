@@ -6,14 +6,15 @@ import PatientDetailModal from './components/PatientDetailModal';
 import ReferralModal from './components/ReferralModal';
 import LivePlayground from './components/LivePlayground';
 import ArchitectureView from './components/ArchitectureView';
+import EHRWidgetView from './components/EHRWidgetView';
 import { MOCK_PATIENTS } from './data/patientsData';
-import { GitBranch, Sparkles } from 'lucide-react';
+import { GitBranch } from 'lucide-react';
 
 export default function App() {
   const [patients, setPatients] = useState(MOCK_PATIENTS);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [referralPatient, setReferralPatient] = useState(null);
-  const [currentTab, setCurrentTab] = useState('triage'); // 'triage' | 'playground' | 'architecture'
+  const [currentTab, setCurrentTab] = useState('triage'); // 'triage' | 'ehr-widget' | 'playground' | 'architecture'
   const [activeRole, setActiveRole] = useState('pediatra'); // 'pediatra' | 'dermatologo'
 
   // Update patient status (Aceptada / Descartada) with feedback
@@ -69,6 +70,15 @@ export default function App() {
           </div>
         )}
 
+        {/* EHR Simulated Widget Tab */}
+        {currentTab === 'ehr-widget' && (
+          <EHRWidgetView
+            patients={patients}
+            onSelectPatient={(patient) => setSelectedPatient(patient)}
+            onOpenReferral={handleOpenReferral}
+          />
+        )}
+
         {/* Live Playground Tab */}
         {currentTab === 'playground' && <LivePlayground />}
 
@@ -112,7 +122,7 @@ export default function App() {
 
           <div className="flex items-center space-x-3 text-slate-400">
             <span className="flex items-center text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20 font-mono">
-              <GitBranch className="w-3 h-3 mr-1" /> rama: noe-dev
+              <GitBranch className="w-3 h-3 mr-1" /> rama: feature/implement-front
             </span>
             <span>Equipos: ana-dev · silvia-dev · noe-dev</span>
           </div>

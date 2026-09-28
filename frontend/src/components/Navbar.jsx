@@ -40,6 +40,19 @@ export default function Navbar({ activeRole, setActiveRole, currentTab, setCurre
               Bandeja de Triage
             </button>
             <button
+              onClick={() => setCurrentTab('ehr-widget')}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                currentTab === 'ehr-widget'
+                  ? 'bg-teal-500 text-slate-950 font-semibold shadow'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <span className="flex items-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 mr-1.5 animate-pulse"></span>
+                Widget HCE (SMART)
+              </span>
+            </button>
+            <button
               onClick={() => setCurrentTab('playground')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 currentTab === 'playground'
@@ -101,22 +114,28 @@ export default function Navbar({ activeRole, setActiveRole, currentTab, setCurre
       </div>
 
       {/* Mobile nav */}
-      <div className="md:hidden flex border-t border-slate-800 bg-slate-900/90 px-4 py-2 justify-around text-xs">
+      <div className="md:hidden flex border-t border-slate-800 bg-slate-900/90 px-2 py-2 justify-around text-xs">
         <button
           onClick={() => setCurrentTab('triage')}
-          className={`px-3 py-1 rounded ${currentTab === 'triage' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
+          className={`px-2.5 py-1 rounded ${currentTab === 'triage' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
         >
           Triage
         </button>
         <button
-          onClick={() => setCurrentTab('playground')}
-          className={`px-3 py-1 rounded ${currentTab === 'playground' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
+          onClick={() => setCurrentTab('ehr-widget')}
+          className={`px-2.5 py-1 rounded ${currentTab === 'ehr-widget' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
         >
-          Simulador NLP
+          Widget HCE
+        </button>
+        <button
+          onClick={() => setCurrentTab('playground')}
+          className={`px-2.5 py-1 rounded ${currentTab === 'playground' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
+        >
+          Simulador
         </button>
         <button
           onClick={() => setCurrentTab('architecture')}
-          className={`px-3 py-1 rounded ${currentTab === 'architecture' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
+          className={`px-2.5 py-1 rounded ${currentTab === 'architecture' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
         >
           Estrategia
         </button>
