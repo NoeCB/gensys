@@ -1,374 +1,453 @@
+import html2pdf from 'html2pdf.js';
 import React, { useState } from 'react';
 import {
   Activity,
-  CheckCircle2,
+  AlertTriangle,
+  Check,
   ChevronRight,
+  Cpu,
+  Crosshair,
+  Download,
   FileText,
   Heart,
   Pill,
+  Radio,
   Send,
   ShieldAlert,
+  Sliders,
   Sparkles,
+  Terminal,
   Thermometer,
   Zap
 } from 'lucide-react';
 
-export default function EHRWidgetView({ patients, onSelectPatient, onOpenReferral }) {
+export default function EHRWidgetView({ patients = [], onSelectPatient, onOpenReferral }) {
   const [selectedPatientId, setSelectedPatientId] = useState(patients[0]?.id || '');
   const [widgetExpanded, setWidgetExpanded] = useState(true);
+  const [pdfDownloaded, setPdfDownloaded] = useState(false);
 
   const activePatient = patients.find((p) => p.id === selectedPatientId) || patients[0];
 
+  const descargarInformePDF = () => {
+    const elemento = document.getElementById('contenido-widget-hce');
+    if (!elemento) return;
+
+    const opciones = {
+      margin: 5,
+      filename: `Informe_HUD_RADIANT_${activePatient?.name?.replace(/\s+/g, '_') || 'Paciente'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    setPdfDownloaded(true);
+    html2pdf().set(opciones).from(elemento).save();
+
+    setTimeout(() => {
+      setPdfDownloaded(false);
+    }, 3000);
+  };
+
   if (!activePatient) return null;
 
-  return (
-    <div className="space-y-6">
-      {/* Intro Banner for Sanofi Evaluators */}
-      <div className="bg-gradient-to-r from-teal-950/60 via-slate-900 to-indigo-950/60 border border-teal-500/30 rounded-2xl p-5 shadow-lg backdrop-blur">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center border border-teal-500/30 shrink-0">
-              <Zap className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h2 className="text-lg font-bold text-white">Simulador de Integración HCE / SMART on FHIR</h2>
-                <span className="px-2 py-0.5 text-[11px] font-bold bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">
-                  Zero-Friction UX
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                Demostración de cómo <strong>RADIANT CDSS</strong> se incrusta de forma no invasiva como panel lateral dentro de un sistema de Historia Clínica Electrónica hospitalario real (tipo Diraya, Cerner Millennium o SAP Salud). El pediatra <strong>no cambia de pestaña ni memoriza contraseñas</strong>: la alerta se activa automáticamente al abrir la ficha del paciente.
-              </p>
-            </div>
-          </div>
+  // Extracción de métricas
+  const flareScore = activePatient.scores?.flareScore ?? 0;
+  const steroidScore = activePatient.scores?.steroidScore ?? 0;
+  const comorbidityScore = activePatient.scores?.comorbidityScore ?? 0;
+  const sleepScore = activePatient.scores?.sleepScore ?? 0;
 
-          {/* Quick patient switch */}
-          <div className="shrink-0 w-full sm:w-auto">
-            <label className="block text-[11px] font-medium text-slate-400 mb-1">
-              Simular Paciente en Consulta:
-            </label>
-            <select
-              value={selectedPatientId}
-              onChange={(e) => setSelectedPatientId(e.target.value)}
-              className="w-full sm:w-64 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none focus:border-teal-400 shadow-inner"
-            >
-              {patients.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.age}) - Score: {p.riskScore}%
-                </option>
-              ))}
-            </select>
+  // Renderizador de Barras LED Segmentadas con Código de Color (Verde / Amarillo / Rojo)
+  const renderLedBar = (score, customColorClass = null) => {
+    const totalSegments = 12;
+    const filledSegments = Math.round((score / 100) * totalSegments);
+
+    // Selección dinámica de color LED si no se especifica uno fijo
+    let ledBg = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
+    if (!customColorClass) {
+      if (score > 70) {
+        ledBg = 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.9)]';
+      } else if (score > 40) {
+        ledBg = 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.9)]';
+      }
+    } else {
+      ledBg = customColorClass;
+    }
+
+    return (
+      <div className="flex gap-1.5 items-center w-full bg-[#02050a] p-1.5 rounded-lg border border-slate-800 shadow-inner">
+        {Array.from({ length: totalSegments }).map((_, i) => (
+          <div
+            key={i}
+            className={`h-3 flex-1 rounded-xs transition-all duration-300 ${
+              i < filledSegments
+                ? ledBg
+                : 'bg-slate-900/80 border border-slate-800/50'
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-5 text-slate-100 font-sans text-xs bg-[#010307] p-4 sm:p-6 rounded-3xl border border-cyan-900/40 shadow-[0_0_60px_rgba(0,0,0,0.95)]">
+      
+      {/* HEADER: CYBER GAME COMMAND CONSOLE */}
+      <div className="bg-gradient-to-r from-[#060e1e] via-[#0b172e] to-[#040914] border-2 border-cyan-500/40 rounded-2xl p-4 shadow-[0_0_25px_rgba(6,182,212,0.2)] relative overflow-hidden flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        <div className="flex items-center gap-4">
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-cyan-950 border-2 border-cyan-400 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+            <Cpu className="w-6 h-6 animate-pulse" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-ping"></span>
           </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-black text-cyan-300 text-sm tracking-widest uppercase">
+                RADIANT // GAMEDEV_HUD_ENGINE
+              </span>
+              <span className="px-2 py-0.5 text-[9px] font-mono font-black bg-cyan-950 text-cyan-300 border border-cyan-400/60 rounded tracking-widest uppercase">
+                SYSTEM_ONLINE
+              </span>
+            </div>
+            <p className="text-slate-400 text-[11px] leading-tight font-mono mt-0.5">
+              CONSOLA TÁCTICA DE MONITORIZACIÓN Y ASISTENCIA DIAGNÓSTICA
+            </p>
+          </div>
+        </div>
+
+        {/* Target Selector Station */}
+        <div className="flex flex-wrap items-center gap-3 bg-[#02050b] p-2 px-4 rounded-xl border border-slate-800 shadow-inner">
+          <div className="flex items-center gap-2">
+            <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span className="text-slate-400 font-mono text-[10px] font-bold uppercase tracking-wider">
+              TARGET_PATIENT:
+            </span>
+          </div>
+          <select
+            value={selectedPatientId}
+            onChange={(e) => setSelectedPatientId(e.target.value)}
+            className="bg-[#070d19] border-2 border-cyan-600/60 text-cyan-200 font-mono text-xs font-black rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-400 cursor-pointer shadow-lg transition"
+          >
+            {patients.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} ({p.age}) — CRITICALITY: {p.riskScore}%
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Simulated Hospital EHR Desktop Window */}
-      <div className="bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-        {/* Hospital OS / EHR Header Toolbar */}
-        <div className="bg-slate-950 border-b border-slate-800 px-5 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center space-x-3">
-            <div className="flex space-x-1.5">
-              <div className="w-3 h-3 rounded-full bg-rose-500/80"></div>
-              <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-              <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-            </div>
-            <span className="text-slate-500">|</span>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-slate-200">DIRAYA SALUD PEDIÁTRICA</span>
-              <span className="text-slate-500 text-[10px]">v4.8.2-PROD</span>
-              <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[10px] font-mono">
-                C.S. Chamberí · Consulta Pediatría 02
-              </span>
-            </div>
+      {/* MAIN GAME HUD CONTAINER */}
+      <div id="contenido-widget-hce" className="bg-[#030712] border-2 border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col relative">
+        
+        {/* Top Status Bar */}
+        <div className="bg-[#060b17] border-b border-slate-800 px-5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono">
+          <div className="flex items-center gap-3 text-slate-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)] animate-pulse"></span>
+            <span className="font-extrabold text-slate-200 tracking-wider">DIRAYA MATRIX ENGINE</span>
+            <span className="text-slate-700">|</span>
+            <span className="text-cyan-400 font-bold">NODE: C.S. CHAMBERÍ</span>
           </div>
-
-          <div className="flex items-center space-x-4 text-slate-400">
-            <span>Facultativo: <strong className="text-slate-200">{activePatient.pediatrician}</strong></span>
-            <span>Turno: <strong className="text-emerald-400">Mañana (En curso)</strong></span>
+          <div className="flex items-center gap-3 text-slate-400">
+            <span>FACULTATIVO: <strong className="text-slate-200">{activePatient.pediatrician || 'Dra. Merino'}</strong></span>
+            <span className="text-slate-700">|</span>
+            <span className="text-emerald-400 font-bold">[ ENCRYPTION: ACTIVE ]</span>
           </div>
         </div>
 
-        {/* Patient Demographic Banner inside EHR */}
-        <div className="bg-slate-850 border-b border-slate-800 p-4 px-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-600/30 text-indigo-300 flex items-center justify-center font-bold text-lg border border-indigo-500/30">
+        {/* Player / Patient Profile Bar */}
+        <div className="bg-gradient-to-r from-[#070d1a] via-[#0c1830] to-[#040813] border-b border-slate-800 p-4 sm:p-6 flex flex-wrap items-center justify-between gap-5">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-cyan-950 border-2 border-cyan-400/60 flex items-center justify-center font-mono font-black text-cyan-300 text-2xl shadow-[0_0_25px_rgba(6,182,212,0.3)]">
               {activePatient.name.charAt(0)}
             </div>
             <div>
-              <div className="flex items-center space-x-3">
-                <h3 className="text-base font-bold text-white">{activePatient.name}</h3>
-                <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono text-xs border border-slate-700">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-lg font-black text-slate-100 tracking-wide font-sans">{activePatient.name}</h1>
+                <span className="font-mono text-[11px] font-extrabold text-cyan-300 bg-cyan-950 px-3 py-0.5 rounded-md border border-cyan-500/50">
                   NHC: {activePatient.nhc}
                 </span>
-                <span className="bg-teal-500/10 text-teal-300 border border-teal-500/20 px-2 py-0.5 rounded-full text-xs font-semibold">
+                <span className="text-[11px] font-bold text-slate-300 bg-slate-800/90 px-2.5 py-0.5 rounded-md border border-slate-700">
                   {activePatient.cohort}
                 </span>
               </div>
-              <div className="flex items-center space-x-4 text-xs text-slate-400 mt-1">
-                <span>Edad: <strong className="text-slate-200">{activePatient.age}</strong></span>
-                <span>Sexo: <strong className="text-slate-200">{activePatient.gender}</strong></span>
-                <span>Peso: <strong className="text-slate-200">{activePatient.weight}</strong></span>
-                <span className="text-rose-400 font-semibold">
-                  Alergias: {Array.isArray(activePatient.atopicMarch) ? activePatient.atopicMarch.join(', ') : 'Ninguna conocida'}
+              <div className="flex flex-wrap items-center gap-4 text-slate-400 text-[11px] mt-2 font-mono">
+                <span>EDAD: <strong className="text-slate-200">{activePatient.age}</strong></span>
+                <span>SEXO: <strong className="text-slate-200">{activePatient.gender}</strong></span>
+                <span>PESO: <strong className="text-slate-200">{activePatient.weight}</strong></span>
+                <span className="text-amber-400 font-sans font-semibold">
+                  Alergias: {Array.isArray(activePatient.atopicMarch) ? activePatient.atopicMarch.join(', ') : 'Sin datos'}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          {/* HUD Action Controls */}
+          <div className="flex items-center gap-3" data-html2canvas-ignore="true">
+            <button
+              onClick={descargarInformePDF}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold border-2 flex items-center gap-2 transition-all duration-300 shadow-lg ${
+                pdfDownloaded
+                  ? 'bg-emerald-950 text-emerald-200 border-emerald-500'
+                  : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700 hover:border-cyan-500/50'
+              }`}
+            >
+              {pdfDownloaded ? <Check className="w-4 h-4 text-emerald-400" /> : <Download className="w-4 h-4 text-cyan-400" />}
+              <span className="font-mono">{pdfDownloaded ? 'EXPORTADO' : 'EXPORTAR PDF'}</span>
+            </button>
+
             <button
               onClick={() => setWidgetExpanded(!widgetExpanded)}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 flex items-center space-x-1.5 transition"
+              className="px-4 py-2.5 bg-cyan-950/80 hover:bg-cyan-900/80 text-cyan-200 rounded-xl border-2 border-cyan-500/50 flex items-center gap-2 transition-all duration-300 shadow-lg font-mono text-xs font-bold"
             >
-              <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-              <span>{widgetExpanded ? 'Ocultar Widget RADIANT' : 'Mostrar Widget RADIANT'}</span>
+              <Sliders className="w-4 h-4 text-cyan-400" />
+              <span>{widgetExpanded ? '[ OCULTAR RADIANT ]' : '[ DESPLEGAR RADIANT ]'}</span>
             </button>
           </div>
         </div>
 
-        {/* EHR Main Layout: Left Main EHR + Right RADIANT SMART Widget */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
-          {/* LEFT: Simulated Standard EHR Interface (7 or 8 columns) */}
-          <div className={`${widgetExpanded ? 'lg:col-span-7 xl:col-span-8' : 'lg:col-span-12'} p-6 space-y-6 bg-slate-900 border-r border-slate-800 overflow-y-auto`}>
-            {/* EHR Subtabs */}
-            <div className="flex space-x-2 border-b border-slate-800 pb-3 text-xs font-medium text-slate-400">
-              <span className="text-teal-400 font-bold border-b-2 border-teal-400 pb-3 -mb-3 px-1">
-                Episodio Clínico Actual
-              </span>
-              <span className="hover:text-slate-200 cursor-pointer px-2">Constantes & Triaje</span>
-              <span className="hover:text-slate-200 cursor-pointer px-2">Histórico de Prescripciones</span>
-              <span className="hover:text-slate-200 cursor-pointer px-2">Informes Previos</span>
+        {/* GRID PRINCIPAL */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x border-slate-800">
+          
+          {/* IZQUIERDA: HISTORIAL Y METRICAS BIOMÉTRICAS */}
+          <div className={`${widgetExpanded ? 'lg:col-span-7 xl:col-span-8' : 'lg:col-span-12'} p-5 sm:p-6 space-y-6 bg-[#030712]`}>
+            
+            {/* Constantes de Salud */}
+            <div>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                <span className="text-xs font-black text-cyan-400 tracking-wider font-mono flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-cyan-400" />
+                  [ VITAL_SIGNS // TELEMETRÍA ]
+                </span>
+                <span className="text-[9px] font-mono text-slate-500">[ LIVE_FEED ]</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-[#060c1a] border border-slate-800 p-4 rounded-xl relative overflow-hidden shadow-inner group hover:border-cyan-500/50 transition">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Heart className="w-4 h-4 text-rose-400" />
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-slate-400">FC Reposo</span>
+                  </div>
+                  <div className="flex items-baseline gap-1 pt-2">
+                    <span className="font-mono text-2xl font-black text-slate-100">102</span>
+                    <span className="text-[10px] text-slate-500 font-mono">bpm</span>
+                  </div>
+                </div>
+
+                <div className="bg-[#060c1a] border border-slate-800 p-4 rounded-xl relative overflow-hidden shadow-inner group hover:border-cyan-500/50 transition">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Thermometer className="w-4 h-4 text-amber-400" />
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-slate-400">Temp</span>
+                  </div>
+                  <div className="flex items-baseline gap-1 pt-2">
+                    <span className="font-mono text-2xl font-black text-slate-100">36.6</span>
+                    <span className="text-[10px] text-slate-500 font-mono">°C</span>
+                  </div>
+                </div>
+
+                <div className="bg-[#060c1a] border border-slate-800 p-4 rounded-xl relative overflow-hidden shadow-inner group hover:border-cyan-500/50 transition">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-slate-400">Brotes / 12M</span>
+                  </div>
+                  <div className="flex items-baseline gap-1 pt-2">
+                    <span className="font-mono text-2xl font-black text-rose-400">{activePatient.flareCount12m}</span>
+                    <span className="text-[10px] text-rose-400/80 font-mono">ep.</span>
+                  </div>
+                </div>
+
+                <div className="bg-[#060c1a] border border-slate-800 p-4 rounded-xl relative overflow-hidden shadow-inner group hover:border-cyan-500/50 transition">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Pill className="w-4 h-4 text-emerald-400" />
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-slate-400">Corticoterapia</span>
+                  </div>
+                  <div className="pt-2">
+                    <span className="font-mono text-xs font-extrabold text-amber-300">Alta Potencia</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Vital Signs Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-3.5 rounded-2xl border border-slate-800 text-xs">
-              <div className="flex items-center space-x-2.5">
-                <Heart className="w-4 h-4 text-rose-400" />
-                <div>
-                  <span className="text-[10px] text-slate-500 block">FC en reposo</span>
-                  <span className="font-bold text-slate-200">102 bpm (Normal)</span>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <Thermometer className="w-4 h-4 text-amber-400" />
-                <div>
-                  <span className="text-[10px] text-slate-500 block">Temperatura</span>
-                  <span className="font-bold text-slate-200">36.6 °C</span>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <Activity className="w-4 h-4 text-indigo-400" />
-                <div>
-                  <span className="text-[10px] text-slate-500 block">Brotes (12 meses)</span>
-                  <span className="font-bold text-rose-400">{activePatient.flareCount12m} episodios</span>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <Pill className="w-4 h-4 text-purple-400" />
-                <div>
-                  <span className="text-[10px] text-slate-500 block">Corticoterapia</span>
-                  <span className="font-bold text-amber-300">Potencia Alta</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Clinical Free Text Note (Doctor's Note in EHR) */}
+            {/* Evolución clínica */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-300 flex items-center">
-                  <FileText className="w-3.5 h-3.5 mr-1.5 text-teal-400" />
-                  Evolución y Anamnesis Actual (HCE):
-                </label>
-                <span className="text-[11px] text-slate-500">Última modificación: Hoy, 10:14 h</span>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-xs font-black text-slate-200 tracking-wider flex items-center gap-2 font-mono">
+                  <FileText className="w-4 h-4 text-cyan-400" />
+                  [ CLINICAL_LOGS // NOTA DE EVOLUCIÓN ]
+                </span>
+                <span className="text-[10px] font-mono text-slate-500">TIMESTAMP: HOY, 10:14H</span>
               </div>
-              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-slate-300 text-xs leading-relaxed font-sans whitespace-pre-wrap">
+              <div className="bg-[#060c1a] border border-slate-800 p-4 rounded-xl text-slate-300 font-mono text-xs leading-relaxed whitespace-pre-wrap relative shadow-inner">
                 {activePatient.evolutionNote}
               </div>
             </div>
 
-            {/* Current Active Prescriptions Table in EHR */}
+            {/* Prescripciones Médicas */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-300 flex items-center">
-                <Pill className="w-3.5 h-3.5 mr-1.5 text-indigo-400" />
-                Prescripciones Activas Registradas en Farmacia:
-              </h4>
-              <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden text-xs">
-                <table className="w-full text-left">
-                  <thead className="bg-slate-900/80 text-[10px] text-slate-400 border-b border-slate-800">
-                    <tr>
-                      <th className="p-3">Fármaco / Principio Activo</th>
+              <span className="text-xs font-black text-slate-200 tracking-wide flex items-center gap-2 font-mono">
+                <Pill className="w-4 h-4 text-emerald-400" />
+                [ INVENTORY // TRATAMIENTOS PRESCRITOS ]
+              </span>
+              <div className="border border-slate-800 rounded-xl overflow-hidden bg-[#060c1a]">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-[#030712] text-slate-400 border-b border-slate-800 font-mono text-[9px] uppercase tracking-wider">
+                      <th className="p-3">Fármaco</th>
                       <th className="p-3">Pauta</th>
-                      <th className="p-3">Grupo Potencia</th>
-                      <th className="p-3">Evolución</th>
+                      <th className="p-3">Categoría</th>
+                      <th className="p-3">Estado</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300 text-[11px]">
-                    <tr>
-                      <td className="p-3 font-semibold text-white">Betametasona dipropionato 0.05%</td>
-                      <td className="p-3">1 aplicación / 12h en brote</td>
-                      <td className="p-3 text-rose-400 font-bold">Alta Potencia (Clase III)</td>
-                      <td className="p-3 text-amber-300">Refractario / Rebote</td>
+                  <tbody className="divide-y divide-slate-800 text-slate-300 font-sans">
+                    <tr className="hover:bg-slate-900/50 transition">
+                      <td className="p-3 font-bold text-slate-100">Betametasona dipropionato 0.05%</td>
+                      <td className="p-3 font-mono text-[11px]">1 app / 12h en brote</td>
+                      <td className="p-3 font-mono text-[11px] text-rose-400 font-bold">Alta Potencia</td>
+                      <td className="p-3">
+                        <span className="px-2.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/40">
+                          Refractario
+                        </span>
+                      </td>
                     </tr>
-                    <tr>
-                      <td className="p-3 font-semibold text-white">Crema emoliente intensiva barrera</td>
-                      <td className="p-3">Aplicación libre tras baño</td>
-                      <td className="p-3 text-slate-400">Emoliente base</td>
-                      <td className="p-3 text-emerald-400">Mantenimiento</td>
+                    <tr className="hover:bg-slate-900/50 transition">
+                      <td className="p-3 font-bold text-slate-100">Emoliente barrera intensivo</td>
+                      <td className="p-3 font-mono text-[11px]">A demanda tras aseo</td>
+                      <td className="p-3 font-mono text-[11px] text-slate-400">Mantenimiento</td>
+                      <td className="p-3">
+                        <span className="px-2.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/40">
+                          Continuo
+                        </span>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
+
           </div>
 
-          {/* RIGHT: Embedded RADIANT SMART on FHIR CDSS Widget */}
+          {/* DERECHA: PANEL INTELIGENTE RADIANT CON BARRAS LED A COLOR */}
           {widgetExpanded && (
-            <div className="lg:col-span-5 xl:col-span-4 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 p-5 space-y-4 flex flex-col justify-between border-l border-teal-500/30">
-              <div className="space-y-4">
-                {/* Widget Header with pulsating Copilot badge */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center border border-teal-500/30">
-                      <Sparkles className="w-4 h-4 animate-pulse" />
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-1.5">
-                        <span className="font-bold text-white text-xs">RADIANT COPILOT</span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                      </div>
-                      <span className="text-[10px] text-teal-400 font-mono">SMART on FHIR v2</span>
-                    </div>
+            <div className="lg:col-span-5 xl:col-span-4 bg-[#050a16] p-5 sm:p-6 space-y-5 flex flex-col justify-between border-t lg:border-t-0 border-slate-800">
+              
+              <div className="space-y-5">
+                {/* Header CDSS */}
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-cyan-400 fill-cyan-400/20 animate-pulse" />
+                    <span className="font-black text-sm text-slate-100 tracking-widest font-mono uppercase">
+                      RADIANT CDSS
+                    </span>
                   </div>
-
-                  <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
-                    Background NLP
+                  <span className="text-[9px] font-mono font-black text-cyan-300 bg-cyan-950 px-2.5 py-1 rounded border border-cyan-500/50 uppercase tracking-widest">
+                    AI_ANALYZER
                   </span>
                 </div>
 
-                {/* Main Alert Card */}
-                <div className={`p-4 rounded-2xl border ${
+                {/* Cuadro de Alerta Severa */}
+                <div className={`p-4 rounded-xl border-2 shadow-xl relative overflow-hidden ${
                   activePatient.riskScore >= 80
-                    ? 'bg-rose-950/30 border-rose-500/40 text-rose-200'
-                    : 'bg-amber-950/30 border-amber-500/40 text-amber-200'
+                    ? 'bg-rose-950/30 border-rose-600/60 text-rose-200'
+                    : 'bg-amber-950/30 border-amber-600/60 text-amber-200'
                 }`}>
-                  <div className="flex items-start space-x-3">
-                    <ShieldAlert className={`w-5 h-5 mt-0.5 shrink-0 ${
-                      activePatient.riskScore >= 80 ? 'text-rose-400' : 'text-amber-400'
-                    }`} />
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-bold text-xs uppercase tracking-wider">
-                          Alerta CDSS Activa
-                        </span>
-                        <span className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
-                          activePatient.riskScore >= 80
-                            ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                        }`}>
-                          Score {activePatient.riskScore}%
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0 text-rose-400" />
+                    <div className="space-y-1 w-full">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-slate-400">Índice Severidad:</span>
+                        <span className="font-mono font-black text-base text-rose-400 bg-rose-950/90 px-3 py-0.5 rounded border border-rose-500">
+                          {activePatient.riskScore}%
                         </span>
                       </div>
-                      <p className="text-xs text-slate-200 mt-1 font-medium leading-snug">
-                        Patrón clínico altamente compatible con <strong>Dermatitis Atópica moderada-severa refractaria</strong>.
+                      <p className="text-[11px] leading-relaxed text-slate-200 font-sans pt-1">
+                        Compatibilidad clínica alta con <strong className="text-cyan-300">Dermatitis Atópica refractaria a tratamiento convencional</strong>.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* 4 Cardinal Signals Progress Breakdown */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 text-xs">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                    Señales Cardinales Detectadas:
-                  </span>
+                {/* SECCIÓN DE BARRAS LED CON CÓDIGO DE COLORES (ROJO / AMARILLO / VERDE) */}
+                <div className="bg-[#02050a] border border-slate-800 rounded-xl p-4 space-y-4 shadow-inner">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span className="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest">
+                      BARRAS LED DE RIESGO
+                    </span>
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                  </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-4">
+                    {/* Brotes - Rojo Crítico */}
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
-                        <span className="text-slate-300">Frecuencia de brotes (12m)</span>
-                        <span className="text-rose-400 font-bold">{activePatient.scores?.flareScore || 95}%</span>
+                      <div className="flex justify-between font-mono text-[10px] mb-1.5">
+                        <span className="text-slate-300 font-bold">FRECUENCIA DE BROTES</span>
+                        <span className="text-rose-400 font-black">{flareScore}%</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-rose-500 h-1.5 rounded-full"
-                          style={{ width: `${activePatient.scores?.flareScore || 95}%` }}
-                        ></div>
-                      </div>
+                      {renderLedBar(flareScore, 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.9)]')}
                     </div>
 
+                    {/* Corticoides - Amarillo Alerta */}
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
-                        <span className="text-slate-300">Escalado corticoideo</span>
-                        <span className="text-indigo-400 font-bold">{activePatient.scores?.steroidScore || 92}%</span>
+                      <div className="flex justify-between font-mono text-[10px] mb-1.5">
+                        <span className="text-slate-300 font-bold">ESCALADO CORTICOIDEO</span>
+                        <span className="text-amber-400 font-black">{steroidScore}%</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-indigo-500 h-1.5 rounded-full"
-                          style={{ width: `${activePatient.scores?.steroidScore || 92}%` }}
-                        ></div>
-                      </div>
+                      {renderLedBar(steroidScore, 'bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.9)]')}
                     </div>
 
+                    {/* Marcha Atópica - Verde Óptimo */}
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
-                        <span className="text-slate-300">Marcha atópica (Comorbilidades)</span>
-                        <span className="text-purple-400 font-bold">{activePatient.scores?.comorbidityScore || 88}%</span>
+                      <div className="flex justify-between font-mono text-[10px] mb-1.5">
+                        <span className="text-slate-300 font-bold">MARCHA ATÓPICA / COMORB.</span>
+                        <span className="text-emerald-400 font-black">{comorbidityScore}%</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-purple-500 h-1.5 rounded-full"
-                          style={{ width: `${activePatient.scores?.comorbidityScore || 88}%` }}
-                        ></div>
-                      </div>
+                      {renderLedBar(comorbidityScore, 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.9)]')}
                     </div>
 
+                    {/* Calidad de Sueño - Azul / Cian */}
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
-                        <span className="text-slate-300">Disrupción de sueño / QoL</span>
-                        <span className="text-teal-400 font-bold">{activePatient.scores?.sleepScore || 90}%</span>
+                      <div className="flex justify-between font-mono text-[10px] mb-1.5">
+                        <span className="text-slate-300 font-bold">IMPACTO CALIDAD SUEÑO</span>
+                        <span className="text-cyan-400 font-black">{sleepScore}%</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-teal-400 h-1.5 rounded-full"
-                          style={{ width: `${activePatient.scores?.sleepScore || 90}%` }}
-                        ></div>
-                      </div>
+                      {renderLedBar(sleepScore, 'bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.9)]')}
                     </div>
                   </div>
                 </div>
 
-                {/* Biologic Eligibility Stamp (Dupixent) */}
-                <div className="bg-teal-950/20 border border-teal-500/30 rounded-2xl p-3.5 text-xs space-y-1.5">
-                  <div className="flex items-center space-x-2 text-teal-300 font-bold text-[11px]">
-                    <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                    <span>Candidatura a Biológico (Dupixent)</span>
+                {/* Recuadro de Elegibilidad */}
+                <div className="bg-cyan-950/40 border-2 border-cyan-500/50 rounded-xl p-3.5 text-[11px] space-y-1 shadow-lg">
+                  <div className="text-cyan-300 font-black font-mono text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>Elegibilidad Especializada Confirmada</span>
                   </div>
-                  <p className="text-[11px] text-slate-300 leading-snug">
-                    Cumple criterios de ficha técnica pediátrica (≥ 6 meses, fracaso a corticoides tópicos y alto impacto funcional).
+                  <p className="text-slate-300 leading-relaxed font-sans text-[11px]">
+                    Cumple criterios para derivación prioritaria a <strong className="text-white">Dermatología Pediátrica</strong> / Evaluación de terapia biológica.
                   </p>
                 </div>
               </div>
 
-              {/* Action Buttons inside Widget */}
-              <div className="space-y-2 pt-3 border-t border-slate-800">
+              {/* Botones de Acción */}
+              <div className="space-y-2.5 pt-3 border-t border-slate-800" data-html2canvas-ignore="true">
                 <button
-                  onClick={() => onOpenReferral(activePatient)}
-                  className="w-full py-2.5 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-teal-500/20 flex items-center justify-center space-x-2 transition"
+                  onClick={() => onOpenReferral && onOpenReferral(activePatient)}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-cyan-600 via-teal-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs rounded-xl border border-cyan-400/50 shadow-xl shadow-cyan-950/60 flex items-center justify-center gap-2 transition-all duration-300 uppercase font-mono tracking-wider"
                 >
-                  <Send className="w-3.5 h-3.5 text-slate-950" />
-                  <span>Emitir Interconsulta en 1 Clic</span>
+                  <Send className="w-4 h-4" />
+                  <span>Emitir Interconsulta Directa</span>
                 </button>
 
                 <button
-                  onClick={() => onSelectPatient(activePatient)}
-                  className="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700 flex items-center justify-center space-x-1.5 transition"
+                  onClick={() => onSelectPatient && onSelectPatient(activePatient)}
+                  className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-slate-100 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-1.5 transition duration-200 font-mono text-[11px]"
                 >
-                  <span>Ver Explicabilidad XAI Detallada</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Ver Análisis XAI Explícito</span>
+                  <ChevronRight className="w-4 h-4 text-cyan-400" />
                 </button>
               </div>
+
             </div>
           )}
+
         </div>
       </div>
     </div>
