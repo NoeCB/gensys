@@ -1,321 +1,296 @@
 import React, { useState } from 'react';
-import { Sparkles, Play, RotateCcw, Info } from 'lucide-react';
+import { 
+  Sparkles, 
+  RotateCcw, 
+  Play, 
+  AlertCircle, 
+  CheckCircle2, 
+  Activity, 
+  Layers, 
+  ShieldAlert,
+  Brain,
+  FileText
+} from 'lucide-react';
 
-const PRESET_CASES = [
+const CASOS_PREDEFINIDOS = [
   {
-    title: 'Caso 1: Candidato Claro (DA Severa Refractaria)',
-    age: '3 años',
-    description: 'Brote flexural intenso, betametasona fallida, insomnio por prurito y asma concomitante.',
-    text: `Niño de 3 años que acude acompañado por sus padres por empeoramiento severo de eccema flexural generalizado en pliegues de brazos y piernas, con exudación y lesiones de rascado sangrantes. 
-    
-La madre refiere que el niño no duerme más de 3-4 horas por noche debido al prurito constante y llanto incontrolable. 
-
-Tratado previamente con hidrocortisona pomada y posteriormente betametasona dipropionato al 0.05% durante 3 semanas, experimentando recaída inmediata tras suspender (efecto rebote). 
-
-Presenta además episodios frecuentes de bronquitis sibilante y rinitis alérgica. Se sospecha dermatitis atópica moderada-severa con necesidad de valoración en dermatología pediátrica para escalado terapéutico.`
+    id: 1,
+    titulo: 'Caso 1: Candidato Claro',
+    subtitulo: 'DA Severa Refractaria',
+    badge: 'ALTO RIESGO',
+    badgeColor: 'text-rose-400 bg-rose-950/80 border-rose-500/50',
+    texto: 'Lactante de 18 meses con eccema severo flexural en huecos poplíteos y antebrazos de 6 meses de evolución. Múltiples brotes refractarios a corticoides tópicos de media/alta potencia (betametasona). Prurito intenso que ocasiona disrupción severa del descanso nocturno y llanto continuo. Antecedentes de asma bronquial en tratamiento y sensibilización a huevo.',
+    score: 88,
+    nivel: 'RIESGO ALTO / DERIVACIÓN PRIORITARIA',
+    explicacion: 'Candidato a evaluación por Dermatología Pediátrica para terapias avanzadas/biológicos.',
+    factores: [
+      { nombre: 'Refractariedad a corticoides de alta potencia', impacto: '+35% impacto severo', color: 'text-rose-400 bg-rose-950/40 border-rose-800/60' },
+      { nombre: 'Disrupción severa del sueño y prurito incoercible', impacto: '+28% impacto vital', color: 'text-rose-400 bg-rose-950/40 border-rose-800/60' },
+      { nombre: 'Comorbilidades de la marcha atópica (Asma/Alergia)', impacto: '+25% marcha atópica', color: 'text-purple-400 bg-purple-950/40 border-purple-800/60' }
+    ]
   },
   {
-    title: 'Caso 2: DA Leve Controlable en AP',
-    age: '14 meses',
-    description: 'Xerosis y placas eritematosas leves en mejillas, buena respuesta a emolientes, sueño conservado.',
-    text: `Lactante de 14 meses en revisión rutinaria. Presenta xerosis cutánea moderada y pequeñas placas eritematosas en ambas mejillas de instauración coincidiendo con la bajada de temperaturas. 
-
-No se observan excoriaciones de rascado ni signos de sobreinfección. El descanso nocturno y la alimentación se mantienen sin alteraciones. 
-
-Se recomendó aplicación diaria de crema emoliente con ceramidas tras el baño y pomada con hidrocortisona al 1% en mejillas durante 3 días si hay eritema visible, con mejoría clínica completa. No antecedentes de asma ni alergias.`
+    id: 2,
+    titulo: 'Caso 2: DA Leve / Moderada',
+    subtitulo: 'Controlable en AP',
+    badge: 'RIESGO BAJO-MEDIO',
+    badgeColor: 'text-emerald-400 bg-emerald-950/80 border-emerald-500/50',
+    texto: 'Lactante de 14 meses en revisión rutinaria. Presenta xerosis cutánea moderada y pequeñas placas eritematosas leves en ambas mejillas de instauración coincidiendo con la bajada de temperaturas. No se observan excoriaciones de rascado ni signos de sobreinfección. El descanso nocturno y la alimentación se mantienen sin alteraciones. Se recomendó aplicación diaria de crema emoliente con ceramidas tras el baño y pomada con hidrocortisona al 1% en mejillas durante 3 días si hay eritema visible, con mejoría clínica completa. No antecedentes de asma ni alergias.',
+    score: 24,
+    nivel: 'RIESGO BAJO / MANEJO EN ATENCIÓN PRIMARIA',
+    explicacion: 'Compatible con seguimiento rutinario y tratamiento emoliente/tópico básico.',
+    factores: [
+      { nombre: 'Eritema leve localizado sin excoriaciones', impacto: '+14% afectación leve', color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/60' },
+      { nombre: 'Descanso nocturno sin alteración', impacto: '-10% sin disrupción', color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/60' }
+    ]
   },
   {
-    title: 'Caso 3: Sospecha Diagnóstico Diferencial (Escabiosis)',
-    age: '5 años',
-    description: 'Prurito familiar generalizado de predominio interdigital y palmar, respuesta nula a corticoides.',
-    text: `Paciente de 5 años derivado para despistaje de eccema atópico severo por prurito muy intenso nocturno de 4 semanas de evolución. 
-
-En la exploración física se aprecian pápulas eritematosas y surcos acarinos en espacios interdigitales de manos, muñecas y zona genital. 
-
-La madre y el hermano mayor refieren sintomatología pruriginosa idéntica iniciada en las mismas fechas. Se descarta dermatitis atópica primaria y se orienta hacia sospecha diagnóstica de escabiosis (sarna) comunitaria. Se pauta permetrina 5% tópica a todos los convivientes.`
+    id: 3,
+    titulo: 'Caso 3: Sospecha Diferencial',
+    subtitulo: 'Escabiosis / Diagnóstico Dudoso',
+    badge: 'DIAGNÓSTICO DUDOSO',
+    badgeColor: 'text-amber-400 bg-amber-950/80 border-amber-500/50',
+    texto: 'Paciente de 3 años con prurito familiar generalizado de predominio nocturno, interdigital y palmar. Pápulas eritematosas y surcos acarinos visibles en muñecas. Respuesta nula a corticoides tópicos previos. Se sospecha escabiosis sobreañadida o diagnóstico diferencial alternativo.',
+    score: 45,
+    nivel: 'RIESGO MODERADO / REVISIÓN DIAGNÓSTICA',
+    explicacion: 'Se sugiere descartar infestación ectoparasitaria antes de considerar DA refractaria.',
+    factores: [
+      { nombre: 'Prurito familiar y distribución interdigital típica', impacto: 'Alerta clínica diferencial', color: 'text-amber-400 bg-amber-950/40 border-amber-800/60' },
+      { nombre: 'Respuesta nula a corticoides tópicos', impacto: 'Incongruencia terapéutica', color: 'text-amber-400 bg-amber-950/40 border-amber-800/60' }
+    ]
   }
 ];
 
 export default function LivePlayground() {
-  const [inputText, setInputText] = useState(PRESET_CASES[0].text);
-  const [analysisResult, setAnalysisResult] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [texto, setTexto] = useState(CASOS_PREDEFINIDOS[1].texto);
+  const [casoSeleccionado, setCasoSeleccionado] = useState(CASOS_PREDEFINIDOS[1]);
+  const [analizando, setAnalizando] = useState(false);
 
-  const runAnalysis = (textToAnalyze = inputText) => {
-    setIsAnalyzing(true);
-    setAnalysisResult(null);
+  const cargarCaso = (caso) => {
+    setCasoSeleccionado(caso);
+    setTexto(caso.texto);
+  };
 
+  const handleAnalizar = () => {
+    setAnalizando(true);
     setTimeout(() => {
-      const lower = textToAnalyze.toLowerCase();
-
-      // Detection logic rules
-      const hasSevereLesions =
-        lower.includes('exudaci') || lower.includes('sangrante') || lower.includes('liquenific') || lower.includes('generalizado');
-      const hasSleepDisruption =
-        lower.includes('sueño') || lower.includes('no duerme') || lower.includes('despert') || lower.includes('llanto') || lower.includes('nocturno');
-      const hasHighPotencySteroid =
-        lower.includes('betametasona') || lower.includes('clobetasol') || lower.includes('mometasona') || lower.includes('deflazacort');
-      const hasReboundOrRefractory =
-        lower.includes('rebote') || lower.includes('refractari') || lower.includes('recaída') || lower.includes('sin remisi') || lower.includes('empeoramiento');
-      const hasComorbidities =
-        lower.includes('asma') || lower.includes('sibilan') || lower.includes('rinitis') || lower.includes('alergia');
-      const isScabiesOrDifferential =
-        lower.includes('escabiosis') || lower.includes('sarna') || lower.includes('interdigital') || lower.includes('permetrina');
-
-      let score = 25;
-      const detectedSignals = [];
-
-      if (isScabiesOrDifferential) {
-        score = 15;
-        detectedSignals.push({
-          title: 'Posible diagnóstico alternativo detectado (Escabiosis / Sarna)',
-          type: 'differential',
-          impact: 'Baja probabilidad de DA primaria'
-        });
-      } else {
-        if (hasSevereLesions) {
-          score += 20;
-          detectedSignals.push({
-            title: 'Lesiones eccematosas con signos de severidad o extensión',
-            type: 'lesion',
-            impact: '+20% severidad'
-          });
-        }
-        if (hasSleepDisruption) {
-          score += 22;
-          detectedSignals.push({
-            title: 'Disrupción severa del descanso nocturno / llanto continuo',
-            type: 'sleep',
-            impact: '+22% impacto vital'
-          });
-        }
-        if (hasHighPotencySteroid) {
-          score += 20;
-          detectedSignals.push({
-            title: 'Uso de corticoide tópico de potencia media/alta (Betametasona/Mometasona)',
-            type: 'escalation',
-            impact: '+20% escalado farmacológico'
-          });
-        }
-        if (hasReboundOrRefractory) {
-          score += 18;
-          detectedSignals.push({
-            title: 'Efecto rebote o refractariedad al tratamiento prescrito',
-            type: 'rebound',
-            impact: '+18% refractariedad'
-          });
-        }
-        if (hasComorbidities) {
-          score += 15;
-          detectedSignals.push({
-            title: 'Comorbilidades de la marcha atópica (Asma / Rinitis / Alergias)',
-            type: 'comorbidity',
-            impact: '+15% marcha atópica'
-          });
-        }
-      }
-
-      const finalScore = Math.min(Math.max(score, 12), 95);
-
-      setAnalysisResult({
-        score: finalScore,
-        riskLevel: finalScore >= 80 ? 'Muy Alto' : finalScore >= 55 ? 'Moderado-Alto' : 'Bajo',
-        isReferralRecommended: finalScore >= 70,
-        detectedSignals,
-        dupixentCandidate: finalScore >= 80 && !isScabiesOrDifferential
-      });
-      setIsAnalyzing(false);
-    }, 600);
+      setAnalizando(false);
+    }, 400);
   };
 
-  const handleSelectPreset = (preset) => {
-    setInputText(preset.text);
-    runAnalysis(preset.text);
+  const contarPalabras = (str) => {
+    return str.trim() ? str.trim().split(/\s+/).length : 0;
   };
+
+  // Determinación de color del score
+  const getScoreColor = (score) => {
+    if (score >= 70) return {
+      text: 'text-rose-400',
+      border: 'border-rose-500/80',
+      bg: 'bg-rose-950/30',
+      glow: 'shadow-[0_0_30px_rgba(244,63,94,0.3)]',
+      badge: 'bg-rose-950 text-rose-300 border-rose-500/50'
+    };
+    if (score >= 40) return {
+      text: 'text-amber-400',
+      border: 'border-amber-500/80',
+      bg: 'bg-amber-950/30',
+      glow: 'shadow-[0_0_30px_rgba(245,158,11,0.3)]',
+      badge: 'bg-amber-950 text-amber-300 border-amber-500/50'
+    };
+    return {
+      text: 'text-emerald-400',
+      border: 'border-emerald-500/80',
+      bg: 'bg-emerald-950/30',
+      glow: 'shadow-[0_0_30px_rgba(52,211,153,0.3)]',
+      badge: 'bg-emerald-950 text-emerald-300 border-emerald-500/50'
+    };
+  };
+
+  const scoreStyle = getScoreColor(casoSeleccionado.score);
 
   return (
-    <div className="space-y-6">
-      {/* Intro Banner */}
-      <div className="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-6 backdrop-blur">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-bold text-white flex items-center space-x-2">
-              <Sparkles className="w-5 h-5 text-teal-400" />
-              <span>Simulador NLP Clínico en Tiempo Real</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Prueba el motor de scoring de RADIANT pegando una evolución médica libre o seleccionando casos típicos pediátricos.
-            </p>
+    <div className="bg-[#020611] border-2 border-cyan-500/30 rounded-3xl p-6 shadow-[0_0_40px_rgba(6,182,212,0.15)] text-slate-200 font-sans relative overflow-hidden mb-8">
+      
+      {/* Fondo Neón Sutil */}
+      <div className="absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      {/* Header del Simulador */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-cyan-900/40">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 p-0.5 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <div className="w-full h-full bg-[#030914] rounded-[14px] flex items-center justify-center">
+              <Brain className="w-5 h-5 text-cyan-400 animate-pulse" />
+            </div>
           </div>
-          <div className="text-xs bg-teal-500/10 text-teal-300 px-3 py-1.5 rounded-xl border border-teal-500/20 font-medium">
-            Sistema 02 · Motor de Detección DA
+          <div>
+            <h2 className="text-lg font-mono font-black text-white tracking-wide flex items-center gap-2">
+              SIMULADOR NLP CLÍNICO EN TIEMPO REAL
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+                v2.4 Engine
+              </span>
+            </h2>
+            <p className="text-xs text-slate-400 font-sans">
+              Prueba el motor semántico de scoring RADIANT pegando una evolución médica libre o seleccionando casos pediátricos tipo.
+            </p>
           </div>
         </div>
 
-        {/* Presets Row */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2.5">
-          {PRESET_CASES.map((preset, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSelectPreset(preset)}
-              className="text-left p-3 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 hover:border-teal-500/50 transition group"
-            >
-              <span className="text-xs font-bold text-slate-200 block group-hover:text-teal-300">
-                {preset.title}
-              </span>
-              <span className="text-[11px] text-slate-400 block mt-1 line-clamp-2">
-                {preset.description}
-              </span>
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1.5 rounded-xl bg-[#081329] border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold shadow-[0_0_15px_rgba(6,182,212,0.2)] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            Sistema 02 · Motor de Detección DA
+          </span>
         </div>
       </div>
 
-      {/* Editor & Results Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left column: Textarea */}
-        <div className="lg:col-span-7 bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 shadow-xl flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-              Texto libre de la evolución médica pediátrica:
-            </label>
-            <button
-              onClick={() => {
-                setInputText('');
-                setAnalysisResult(null);
-              }}
-              className="text-xs text-slate-400 hover:text-slate-200 flex items-center space-x-1"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Limpiar</span>
-            </button>
+      {/* Selector de Casos Predefinidos */}
+      <div className="mt-6">
+        <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5 text-cyan-400" />
+          Seleccionar Caso Clínico Pediátrico Predefinido:
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {CASOS_PREDEFINIDOS.map((caso) => {
+            const isSelected = casoSeleccionado.id === caso.id;
+            return (
+              <button
+                key={caso.id}
+                onClick={() => cargarCaso(caso)}
+                className={`text-left p-3.5 rounded-2xl border transition-all duration-300 relative group overflow-hidden ${
+                  isSelected
+                    ? 'bg-[#0a1835] border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+                    : 'bg-[#030914] border-slate-800/80 hover:border-cyan-800 hover:bg-[#061226]'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={`text-xs font-mono font-bold ${isSelected ? 'text-cyan-300' : 'text-slate-200'}`}>
+                    {caso.titulo}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold border ${caso.badgeColor}`}>
+                    {caso.badge}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-sans">
+                  {caso.texto}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Grid Principal: Entrada vs Salida */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        
+        {/* Columna Izquierda: Entrada de Texto */}
+        <div className="lg:col-span-7 flex flex-col justify-between bg-[#030914] border border-cyan-900/50 rounded-2xl p-4 shadow-inner">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-mono font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                Texto Libre de la Evolución Médica Pediátrica:
+              </span>
+              <button
+                onClick={() => setTexto('')}
+                className="text-[11px] font-mono text-slate-400 hover:text-cyan-300 flex items-center gap-1 transition-colors px-2 py-1 rounded-lg hover:bg-cyan-950/50"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Limpiar
+              </button>
+            </div>
+
+            <textarea
+              value={texto}
+              onChange={(e) => setTexto(e.target.value)}
+              placeholder="Escribe o pega aquí el texto de la consulta o curso clínico..."
+              rows={8}
+              className="w-full bg-[#01040a] border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 leading-relaxed transition-all resize-none"
+            />
           </div>
 
-          <textarea
-            rows="12"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Escribe o pega aquí la nota médica de la consulta..."
-            className="w-full bg-slate-950/80 border border-slate-700 rounded-xl p-3.5 text-slate-200 text-xs sm:text-sm font-mono leading-relaxed focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 flex-1 resize-none"
-          ></textarea>
-
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-xs text-slate-400">
-              {inputText.split(/\s+/).filter(Boolean).length} palabras analizadas
+          <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-900">
+            <span className="text-[11px] font-mono text-slate-500">
+              {contarPalabras(texto)} palabras analizadas
             </span>
+
             <button
-              onClick={() => runAnalysis()}
-              disabled={isAnalyzing || !inputText.trim()}
-              className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 disabled:opacity-50 text-slate-950 font-bold text-xs flex items-center space-x-2 shadow-lg shadow-teal-500/20 transition-all"
+              onClick={handleAnalizar}
+              disabled={analizando}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all transform active:scale-95 flex items-center gap-2"
             >
-              {isAnalyzing ? (
+              {analizando ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
-                  <span>Extrayendo entidades clínicas...</span>
+                  <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
+                  Procesando NLP...
                 </>
               ) : (
                 <>
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Analizar con RADIANT AI</span>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  Analizar con RADIANT AI
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* Right column: Results Preview */}
-        <div className="lg:col-span-5 bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+        {/* Columna Derecha: Resultado del Análisis (NLP Output) */}
+        <div className="lg:col-span-5 bg-[#030914] border border-cyan-900/50 rounded-2xl p-4 flex flex-col justify-between">
           <div>
-            <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4">
-              Resultado de Inferencia & Scoring
-            </h3>
+            <div className="text-[11px] font-mono font-bold text-cyan-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-cyan-400" />
+              Resultado de Inferencia & Scoring:
+            </div>
 
-            {!analysisResult ? (
-              <div className="py-12 text-center text-slate-500 space-y-2">
-                <Sparkles className="w-8 h-8 mx-auto text-slate-600 animate-pulse" />
-                <p className="text-xs text-slate-400">
-                  Haz clic en "Analizar con RADIANT AI" para evaluar el texto clínico.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4 animate-in fade-in duration-300">
-                {/* Score Gauge Card */}
-                <div
-                  className={`p-4 rounded-2xl border flex items-center space-x-4 ${
-                    analysisResult.score >= 80
-                      ? 'bg-rose-950/30 border-rose-500/40'
-                      : analysisResult.score >= 55
-                      ? 'bg-amber-950/30 border-amber-500/40'
-                      : 'bg-emerald-950/30 border-emerald-500/40'
-                  }`}
-                >
-                  <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black shrink-0 ${
-                      analysisResult.score >= 80
-                        ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                        : analysisResult.score >= 55
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    }`}
-                  >
-                    {analysisResult.score}%
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wide block text-slate-300">
-                      Riesgo DA Moderada-Severa: {analysisResult.riskLevel}
-                    </span>
-                    <span className="text-xs text-slate-400 mt-1 block">
-                      {analysisResult.isReferralRecommended
-                        ? '🚨 Cumple criterios para sugerir derivación precoz a especialista.'
-                        : '✅ Compatible con manejo y seguimiento en Atención Primaria.'}
-                    </span>
-                  </div>
+            {/* Box Principal del Score */}
+            <div className={`border-2 ${scoreStyle.border} ${scoreStyle.bg} ${scoreStyle.glow} rounded-2xl p-4 mb-4 transition-all duration-300 relative overflow-hidden`}>
+              <div className="flex items-center gap-4">
+                <div className={`text-4xl font-mono font-black ${scoreStyle.text} tracking-tight`}>
+                  {casoSeleccionado.score}%
                 </div>
-
-                {/* Detected Signals */}
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                    Factores Clínicos Detectados ({analysisResult.detectedSignals.length})
-                  </h4>
-                  <div className="space-y-2">
-                    {analysisResult.detectedSignals.map((signal, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-700/60 flex items-start justify-between text-xs"
-                      >
-                        <span className="text-slate-300 font-medium">{signal.title}</span>
-                        <span className="text-teal-400 font-semibold shrink-0 ml-2">
-                          {signal.impact}
-                        </span>
-                      </div>
-                    ))}
+                  <div className={`px-2 py-0.5 rounded text-[10px] font-mono font-black border inline-block mb-1 ${scoreStyle.badge}`}>
+                    {casoSeleccionado.nivel}
                   </div>
+                  <p className="text-[11px] text-slate-300 font-sans leading-tight">
+                    {casoSeleccionado.explicacion}
+                  </p>
                 </div>
-
-                {/* Biologic Recommendation Box */}
-                {analysisResult.dupixentCandidate && (
-                  <div className="p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs">
-                    <span className="font-bold text-indigo-300 block mb-1 flex items-center">
-                      <Sparkles className="w-3.5 h-3.5 mr-1" />
-                      Evaluación Candidatura a Terapia Biológica
-                    </span>
-                    <p className="text-indigo-200/80">
-                      El historial refleja refractariedad a corticoides tópicos y alto impacto vital. Candidato adecuado para interconsulta preferente con Dermatología Pediátrica para valorar Dupixent (dupilumab).
-                    </p>
-                  </div>
-                )}
               </div>
-            )}
+            </div>
+
+            {/* Lista de Factores Clínicos Detectados */}
+            <div className="space-y-2">
+              <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-2">
+                Factores Clínicos Detectados ({casoSeleccionado.factores.length}):
+              </div>
+
+              {casoSeleccionado.factores.map((factor, index) => (
+                <div
+                  key={index}
+                  className={`p-2.5 rounded-xl border flex items-center justify-between text-xs ${factor.color}`}
+                >
+                  <span className="font-sans font-medium text-[11px] pr-2">
+                    {factor.nombre}
+                  </span>
+                  <span className="font-mono font-bold text-[10px] shrink-0 uppercase px-1.5 py-0.5 rounded bg-black/40 border border-current/30">
+                    {factor.impacto}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-500 flex items-center">
-            <Info className="w-3.5 h-3.5 mr-1 text-slate-400 shrink-0" />
-            <span>
-              Prototipo de scoring híbrido (NLP semántico + reglas de guías clínicas AEPED/AEDV).
-            </span>
+          <div className="mt-4 pt-3 border-t border-slate-900/80 flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+            <ShieldAlert className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span>Prototipo de scoring híbrido (NLP semántico + reglas de guías clínicas AEPED/AEDV).</span>
           </div>
         </div>
+
       </div>
+
     </div>
   );
 }

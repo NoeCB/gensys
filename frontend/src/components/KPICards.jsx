@@ -1,131 +1,137 @@
 import React from 'react';
-import { Users, AlertTriangle, CheckCircle2, Clock, Info, ShieldCheck, Stethoscope, Zap } from 'lucide-react';
-import { MOCK_STATS } from '../data/patientsData';
+import { Users, AlertTriangle, Zap, Clock, Info } from 'lucide-react';
 
-export default function KPICards({ activeRole }) {
-  const isPediatra = activeRole === 'pediatra';
+export default function KPICards({ stats }) {
+  // Valores por defecto si no vienen props
+  const total = stats?.totalPatients || 184;
+  const highRisk = stats?.highRiskCount || 18;
+  const pending = stats?.pendingCount || 6;
+  const timeSaved = stats?.timeSavedMinutes || 15;
+  const timeAdvance = stats?.timeAdvanceMonths || 4.4;
 
   return (
-    <div className="mb-6">
-      {/* CDSS Non-diagnostic Notice with Role Context */}
-      <div className="mb-4 bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-3 flex items-start space-x-3 text-xs text-indigo-200">
-        <Info className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
-        <div className="flex-1">
-          <div className="flex items-center space-x-2 mb-0.5">
-            <span className="font-semibold text-indigo-300">Principio Clínico RADIANT:</span>
-            <span className="flex items-center text-[10px] px-2 py-0.2 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-              {isPediatra ? (
-                <>
-                  <Stethoscope className="w-3 h-3 mr-1" /> Modo Pediatría de Atención Primaria
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-3 h-3 mr-1" /> Modo Dermatología Especializada (Validador S4)
-                </>
-              )}
-            </span>
+    <div className="space-y-4 mb-6 font-sans text-xs">
+      {/* Banner Legal / Clínico Superior con Neón */}
+      <div className="bg-gradient-to-r from-[#060e1e] via-[#0b172e] to-[#040914] border-2 border-cyan-500/50 rounded-2xl p-4 shadow-[0_0_30px_rgba(6,182,212,0.25)] relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="absolute top-0 left-0 w-1 h-full bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.9)]"></div>
+        <div className="flex items-start gap-3 pl-2">
+          <div className="w-8 h-8 rounded-xl bg-cyan-950 border border-cyan-400/60 flex items-center justify-center text-cyan-300 shrink-0 shadow-[0_0_15px_rgba(6,182,212,0.4)] mt-0.5">
+            <Info className="w-4 h-4 text-cyan-300" />
           </div>
           <div>
-            Sistema de soporte a la decisión clínica (CDSS) para cribado precoz de DA moderada-severa.{' '}
-            <strong className="text-white">RADIANT no diagnostica</strong>; la valoración y decisión de derivación corresponde exclusivamente al facultativo médico.
+            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+              <span className="font-mono font-black text-cyan-300 text-[11px] tracking-wider uppercase">
+                PRINCIPIO CLÍNICO RADIANT:
+              </span>
+              <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-cyan-950 text-cyan-200 border border-cyan-500/50 rounded-md tracking-wider uppercase">
+                Modo Pediatría de Atención Primaria
+              </span>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed font-sans">
+              Sistema de soporte a la decisión clínica (CDSS) para cribado precoz de DA moderada-severa. <strong className="text-white font-bold">RADIANT no diagnostica</strong>; la valoración y decisión de derivación corresponde exclusivamente al facultativo médico.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Metric Cards Grid */}
+      {/* Tarjetas de Métricas (KPIs) con Estética Cibernética Avanzada */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1 */}
-        <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 shadow-sm backdrop-blur">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              {isPediatra ? 'Pacientes Pediátricos Cribados' : 'Interconsultas Recibidas'}
+        
+        {/* Tarjeta 1: Población Cribada */}
+        <div className="bg-[#02050a] border-2 border-cyan-900/60 hover:border-cyan-500/60 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)] group">
+          <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-500/5 rounded-full blur-xl group-hover:bg-cyan-500/10 transition-all"></div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+              Pacientes Pediátricos
             </span>
-            <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400">
-              <Users className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+              <Users className="w-4 h-4 text-cyan-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-white">
-              {isPediatra ? MOCK_STATS.totalAnalyzed : (MOCK_STATS.acceptedReferrals + MOCK_STATS.pendingReview)}
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              {total}
             </span>
-            <span className="text-xs font-semibold text-teal-400 bg-teal-500/10 px-1.5 py-0.5 rounded">
-              {isPediatra ? 'Activo 24/7' : 'Cohorte HCE'}
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(52,211,153,0.3)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>
+              ACTIVO 24/7
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-            {isPediatra ? 'Población pediátrica 0-14 años analizada' : 'Derivaciones desde Atención Primaria'}
+          <p className="text-[11px] text-slate-400 font-mono mt-1 pt-2 border-t border-slate-900">
+            Población pediátrica 0-14 años analizada
           </p>
         </div>
 
-        {/* Metric 2 */}
-        <div className="bg-slate-800/80 border border-rose-500/30 rounded-2xl p-4 shadow-sm backdrop-blur relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-rose-500/10 rounded-full blur-xl -mr-6 -mt-6"></div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              {isPediatra ? 'Alertas DA Moderada-Severa' : 'Candidatos Biológico (Dupixent)'}
+        {/* Tarjeta 2: Alertas Críticas (Con Alarma Visual) */}
+        <div className="bg-[#02050a] border-2 border-rose-900/60 hover:border-rose-500/60 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)] group">
+          <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-rose-500/5 rounded-full blur-xl group-hover:bg-rose-500/10 transition-all"></div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+              Alertas DA Severa
             </span>
-            <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400">
-              <AlertTriangle className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-rose-950/80 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.3)]">
+              <AlertTriangle className="w-4 h-4 text-rose-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-rose-400">
-              {isPediatra ? MOCK_STATS.moderateSevereAlerts : '4 prioritarios'}
+          <div className="flex items-baseline gap-2.5">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-rose-400 tracking-tight drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]">
+              {highRisk}
             </span>
-            <span className="text-xs text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded font-medium">
-              {MOCK_STATS.pendingReview} pendientes
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-mono font-black bg-rose-950 text-rose-300 border border-rose-500/60 shadow-[0_0_10px_rgba(244,63,94,0.4)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 animate-ping"></span>
+              {pending} PENDIENTES
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-            {isPediatra ? 'Candidatos a derivación precoz a especialista' : 'Refractarios a corticoides tópicos clase III'}
+          <p className="text-[11px] text-slate-400 font-mono mt-1 pt-2 border-t border-slate-900">
+            Candidatos a derivación precoz a especialista
           </p>
         </div>
 
-        {/* Metric 3 */}
-        <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 shadow-sm backdrop-blur">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              {isPediatra ? 'Tiempo Ahorrado Asistencial' : 'Concordancia Especialista (PPV)'}
+        {/* Tarjeta 3: Tiempo Ahorrado */}
+        <div className="bg-[#02050a] border-2 border-emerald-900/60 hover:border-emerald-500/60 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)] group">
+          <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-all"></div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+              Eficiencia Asistencial
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-              {isPediatra ? <Zap className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]">
+              <Zap className="w-4 h-4 text-emerald-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-emerald-400">
-              {isPediatra ? '~15 min' : MOCK_STATS.specialistAgreementRate}
-            </span>
-            <span className="text-xs text-slate-400">
-              {isPediatra ? 'por interconsulta' : `(${MOCK_STATS.acceptedReferrals} confirmadas)`}
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]">
+              ~{timeSaved} min
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-            {isPediatra ? 'Redacción automática en 1 clic' : 'Bucle continuo de validación (Sistema 04)'}
+          <p className="text-[11px] text-slate-400 font-mono mt-1 pt-2 border-t border-slate-900">
+            Redacción automática de informe en 1 clic
           </p>
         </div>
 
-        {/* Metric 4 */}
-        <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 shadow-sm backdrop-blur">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              {isPediatra ? 'Anticipación Diagnóstica Media' : 'Reducción Demora Terapéutica'}
+        {/* Tarjeta 4: Anticipación Diagnóstica */}
+        <div className="bg-[#02050a] border-2 border-purple-900/60 hover:border-purple-500/60 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)] group">
+          <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-all"></div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+              Anticipación Clínica
             </span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-              <Clock className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-purple-950/80 border border-purple-500/40 flex items-center justify-center text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.3)]">
+              <Clock className="w-4 h-4 text-purple-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-indigo-300">
-              {isPediatra ? MOCK_STATS.avgDiagnosisAnticipationMonths : '6.2 meses'}
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-purple-400 tracking-tight drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+              {timeAdvance} m
             </span>
-            <span className="text-xs text-indigo-400 font-medium">
-              {isPediatra ? 'de adelanto' : 'más rápido'}
+            <span className="text-[10px] font-mono text-purple-300 font-bold">
+              DE ADELANTO
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-            {isPediatra ? 'Evitando retraso en acceso a terapias avanzadas' : 'Acceso temprano a tratamiento sistémico'}
+          <p className="text-[11px] text-slate-400 font-mono mt-1 pt-2 border-t border-slate-900">
+            Evitando retraso en acceso a terapias avanzadas
           </p>
         </div>
+
       </div>
     </div>
   );

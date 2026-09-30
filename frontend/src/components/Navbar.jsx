@@ -1,144 +1,111 @@
 import React from 'react';
-import { Activity, ShieldCheck, Stethoscope, Sparkles, Building2 } from 'lucide-react';
+import { 
+  Inbox, 
+  LayoutGrid, 
+  Sparkles, 
+  Cpu, 
+  Stethoscope, 
+  UserCheck, 
+  Activity,
+  Terminal
+} from 'lucide-react';
 
-export default function Navbar({ activeRole, setActiveRole, currentTab, setCurrentTab }) {
+export default function Navbar({ activeTab, setActiveTab, currentRole, setCurrentRole }) {
+  const tabs = [
+    { id: 'triage', label: 'Bandeja de Triage', icon: Inbox },
+    { id: 'ehr', label: 'Widget HCE (SMART)', icon: LayoutGrid },
+    { id: 'nlp', label: 'Simulador NLP', icon: Sparkles },
+    { id: 'arch', label: 'Arquitectura & Equipo', icon: Cpu }
+  ];
+
   return (
-    <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo & Brand */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-teal-500/20">
-              <Activity className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xl font-bold tracking-tight text-white">RADIANT</span>
-                <span className="px-2 py-0.5 text-xs font-semibold bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full">
-                  CDSS Pediátrico
-                </span>
-                <span className="hidden md:inline-flex items-center text-xs text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700/60">
-                  <Building2 className="w-3 h-3 mr-1 text-indigo-400" /> Sanofi Immunology Challenge
-                </span>
-              </div>
-              <p className="text-xs text-slate-400">
-                IA para detección temprana y derivación en Dermatitis Atópica moderada-severa
-              </p>
-            </div>
+    <header className="sticky top-0 z-50 bg-[#020612] border-b border-cyan-900/50 px-4 py-3 shadow-lg">
+      <div className="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        {/* LOGO + BRANDING */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-400 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            <Activity className="w-5 h-5 animate-pulse" />
           </div>
 
-          {/* Navigation Tabs */}
-          <nav className="hidden md:flex items-center space-x-1 bg-slate-800/70 p-1 rounded-xl border border-slate-700/60">
-            <button
-              onClick={() => setCurrentTab('triage')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                currentTab === 'triage'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-              }`}
-            >
-              Bandeja de Triage
-            </button>
-            <button
-              onClick={() => setCurrentTab('ehr-widget')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                currentTab === 'ehr-widget'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-              }`}
-            >
-              <span className="flex items-center">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 mr-1.5 animate-pulse"></span>
-                Widget HCE (SMART)
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-mono font-black text-lg text-white uppercase tracking-wider">
+                RADIANT
+              </h1>
+              <span className="px-2 py-0.5 text-[9px] font-mono font-bold text-cyan-300 bg-cyan-950 border border-cyan-500/50 rounded">
+                CDSS PEDIÁTRICO
               </span>
-            </button>
-            <button
-              onClick={() => setCurrentTab('playground')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                currentTab === 'playground'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-              }`}
-            >
-              <span className="flex items-center">
-                <Sparkles className="w-3.5 h-3.5 mr-1" /> Simulador NLP
-              </span>
-            </button>
-            <button
-              onClick={() => setCurrentTab('architecture')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                currentTab === 'architecture'
-                  ? 'bg-teal-500 text-slate-950 font-semibold shadow'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-              }`}
-            >
-              Arquitectura & Equipo
-            </button>
-          </nav>
-
-          {/* Role selector & FHIR badge */}
-          <div className="flex items-center space-x-3">
-            <div className="hidden lg:flex items-center space-x-1.5 text-xs text-slate-400 bg-slate-800/50 px-2.5 py-1 rounded-lg border border-slate-700/40">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>FHIR R4 Conectado</span>
             </div>
-
-            <div className="flex items-center space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700">
-              <button
-                onClick={() => setActiveRole('pediatra')}
-                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center transition ${
-                  activeRole === 'pediatra'
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Vista de Pediatra de Atención Primaria"
-              >
-                <Stethoscope className="w-3.5 h-3.5 mr-1" />
-                Pediatra AP
-              </button>
-              <button
-                onClick={() => setActiveRole('dermatologo')}
-                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center transition ${
-                  activeRole === 'dermatologo'
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Vista de Dermatólogo Pediátrico (Validador Sistema 04)"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 mr-1" />
-                Dermatólogo
-              </button>
-            </div>
+            <p className="text-[11px] text-slate-400 font-sans hidden sm:block">
+              IA para detección temprana y derivación en Dermatitis Atópica
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* Mobile nav */}
-      <div className="md:hidden flex border-t border-slate-800 bg-slate-900/90 px-2 py-2 justify-around text-xs">
-        <button
-          onClick={() => setCurrentTab('triage')}
-          className={`px-2.5 py-1 rounded ${currentTab === 'triage' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
-        >
-          Triage
-        </button>
-        <button
-          onClick={() => setCurrentTab('ehr-widget')}
-          className={`px-2.5 py-1 rounded ${currentTab === 'ehr-widget' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
-        >
-          Widget HCE
-        </button>
-        <button
-          onClick={() => setCurrentTab('playground')}
-          className={`px-2.5 py-1 rounded ${currentTab === 'playground' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
-        >
-          Simulador
-        </button>
-        <button
-          onClick={() => setCurrentTab('architecture')}
-          className={`px-2.5 py-1 rounded ${currentTab === 'architecture' ? 'text-teal-400 font-bold' : 'text-slate-400'}`}
-        >
-          Estrategia
-        </button>
+        {/* MÓDULOS DE NAVEGACIÓN (BOTONES DE PESTAÑA) */}
+        <div className="bg-[#01040a] p-1.5 rounded-xl border border-slate-800 flex items-center gap-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            // Detección robusta de pestaña activa (soporta activeTab o vista)
+            const isActive = activeTab === tab.id;
+
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  if (typeof setActiveTab === 'function') {
+                    setActiveTab(tab.id);
+                  }
+                }}
+                className={`px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all duration-150 flex items-center gap-2 cursor-pointer select-none ${
+                  isActive
+                    ? 'bg-cyan-500 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.6)] scale-105 border border-cyan-300'
+                    : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700/50'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-cyan-400'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+
+          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 ml-1 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-[10px] font-mono text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            FHIR R4 Conectado
+          </div>
+        </div>
+
+        {/* SELECTOR DE ROL MÉDICO */}
+        <div className="flex items-center gap-1.5 bg-[#01040a] p-1 rounded-xl border border-slate-800">
+          <button
+            type="button"
+            onClick={() => setCurrentRole && setCurrentRole('pediatra')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer ${
+              currentRole === 'pediatra' || !currentRole
+                ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] border border-indigo-400'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Stethoscope className="w-3.5 h-3.5" />
+            Pediatra AP
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCurrentRole && setCurrentRole('dermatologo')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer ${
+              currentRole === 'dermatologo'
+                ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)] border border-purple-400'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <UserCheck className="w-3.5 h-3.5" />
+            Dermatólogo
+          </button>
+        </div>
+
       </div>
     </header>
   );
